@@ -208,7 +208,7 @@ int main(void)
 	// change angle with pots
 	if (adc_dma_buf[13] < 4000) {	// position control mode
 		adc12 = 0.3*adc_dma_buf[12] + 0.7*adc12;
-		angle_tgt = 2 * (2*PI*((float) adc12) / 4095.0);
+		angle_tgt = 0.5 * (2*PI*((float) adc12) / 4095.0);
 	}
 	else {							// bonus speed control mode!
 		angle_tgt += 0.2 * ((float) adc_dma_buf[12]) / 4095.0;
@@ -250,7 +250,7 @@ int main(void)
     TIM1->CCR2 = (int) (pwm_period * dutyB);
     TIM1->CCR3 = (int) (pwm_period * dutyC);
 
-    HAL_Delay(0.1);
+    HAL_Delay(0.01);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -636,7 +636,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
-  htim1.Init.Period = 4199;
+  htim1.Init.Period = 2000;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -683,7 +683,7 @@ static void MX_TIM1_Init(void)
   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
   sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 10;
+  sBreakDeadTimeConfig.DeadTime = 6;
   sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
   sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
   sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
