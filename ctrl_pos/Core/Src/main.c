@@ -205,13 +205,15 @@ int main(void)
   while (1)
   {
 
+
 	// change angle with pots
+	adc12 = 0.3*adc_dma_buf[12] + 0.7*adc12;
+
 	if (adc_dma_buf[13] < 4000) {	// position control mode
-		adc12 = 0.3*adc_dma_buf[12] + 0.7*adc12;
 		angle_tgt = 0.5 * (2*PI*((float) adc12) / 4095.0);
 	}
 	else {							// bonus speed control mode!
-		angle_tgt += 0.2 * ((float) adc_dma_buf[12]) / 4095.0;
+		angle_tgt += 0.2 * ((float) adc12) / 4095.0;
 	}
 
 	// retrieve rotor position
