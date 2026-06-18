@@ -209,7 +209,7 @@ int main(void)
 	// change angle with pots
 	adc12 = 0.3*adc_dma_buf[12] + 0.7*adc12;
 
-	if (adc_dma_buf[13] < 4000) {	// position control mode
+	if (adc_dma_buf[0] < 3000) {	// position control mode
 		angle_tgt = 0.5 * (2*PI*((float) adc12) / 4095.0);
 	}
 	else {							// bonus speed control mode!
@@ -225,8 +225,8 @@ int main(void)
 	// ******control position******
 	// error
 	angle_err = angle_tgt - angle_mes;	// rads
-	while(angle_err >  PI) angle_err -= 2*PI;
-	while(angle_err < -PI) angle_err += 2*PI;
+	if (angle_err>0) 	angle_err=fmodf(angle_err+PI,2*PI)-PI;
+	else				angle_err=fmodf(angle_err-PI,2*PI)+PI;	// caps angle_err to (-pi,pi)
 
 	// amplitude of voltage vector
 	ampl = fabs(gain_p*angle_err);
@@ -252,7 +252,7 @@ int main(void)
     TIM1->CCR2 = (int) (pwm_period * dutyB);
     TIM1->CCR3 = (int) (pwm_period * dutyC);
 
-    HAL_Delay(0.01);
+//    HAL_Delay(0.01);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -272,7 +272,7 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -282,12 +282,19 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 180;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 2;
   RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Activate the Over-Drive mode
+  */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -298,10 +305,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
@@ -636,9 +643,9 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 1;
+  htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
-  htim1.Init.Period = 2000;
+  htim1.Init.Period = 16000;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -662,7 +669,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 2100;
+  sConfigOC.Pulse = 239;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -672,12 +679,10 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 3150;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 4100;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
@@ -685,7 +690,7 @@ static void MX_TIM1_Init(void)
   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
   sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 6;
+  sBreakDeadTimeConfig.DeadTime = 4;
   sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
   sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
   sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
