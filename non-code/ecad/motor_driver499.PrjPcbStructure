@@ -1,0 +1,5 @@
+Record=TopLevelDocument|FileName=top.SchDoc|SheetNumber=1
+Record=SheetSymbol|SourceDocument=top.SchDoc|Designator=A|SchDesignator=A|FileName=phase.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=phase.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=top.SchDoc|Designator=B|SchDesignator=B|FileName=phase.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=phase.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=top.SchDoc|Designator=C|SchDesignator=C|FileName=phase.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=phase.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=top.SchDoc|Designator=DC|SchDesignator=DC|FileName=dc_sense.SchDoc|SheetNumber=3|SymbolType=Normal|RawFileName=dc_sense.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
